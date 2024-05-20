@@ -9,9 +9,14 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto, updatePostDto } from './dto/create-post.dto';
+import {
+  CreatePostDto,
+  updatePostDto,
+  FilterPostDto,
+} from './dto/create-post.dto';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -34,10 +39,10 @@ export class PostController {
     return this.postService.create(data, user);
   }
 
-  @Public ()
+  @Public()
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  findAll(@Query() params: FilterPostDto) {
+    return this.postService.findAll(params);
   }
 
   @Public()

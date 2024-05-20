@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreatePostDto, updatePostDto } from './dto/create-post.dto';
+import { CreatePostDto, updatePostDto,FilterPostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
-import { Repository } from 'typeorm';
+import { Between, FindOptionsWhere, Repository } from 'typeorm';
 import { PayloadToken } from 'src/auth/models/token.model';
 import { User } from 'src/users/entities/user.entity';
 
@@ -23,7 +24,21 @@ export class PostService {
     return this.PostRepo.save(post);
   }
 
-  findAll() {
+  findAll(params?: FilterPostDto) {
+    if (params) {
+      const where: FindOptionsWhere<Post> = {};
+      const { limit, offset } = params;
+      if (params.sections) {
+        where.Sections = params.sections;
+      }
+      return this.PostRepo.find({
+        relations: ['author'],
+        where,
+        take: limit,
+        skip: offset,
+      });
+    }
+
     return this.PostRepo.find({ relations: ['author'] });
   }
 
